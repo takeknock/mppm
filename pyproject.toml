@@ -1,0 +1,16 @@
+[project]
+requires = ["poetry"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "mppm"
+version = "0.1.0"
+description = "My Package Manager"
+authors = ["T.M. <takeknock@gmail.com>"]
+
+[tool.poetry.scripts]
+mppm = "mppm.main:cli"
+
+[tool.poetry.dependencies]
+python = ">=3.11"
+click = "*"
