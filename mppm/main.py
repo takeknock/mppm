@@ -1,12 +1,21 @@
 import click
 
+from .pyproject import PyProjectToml
+
+toml = PyProjectToml()
+
 @click.group()
 def cli():
     pass
 
 @click.command()
 def lock():
-    click.echo('lock!')
+    dependencies = toml.get_mppm_dependencies()
+    python_version = toml.get_python_version()
+    click.echo("//---dependencies---")
+    click.echo(dependencies)
+    click.echo("//---python version---")
+    click.echo(python_version)
 
 @click.command()
 def install():
