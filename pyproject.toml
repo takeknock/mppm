@@ -12,5 +12,5 @@ authors = ["T.M. <takeknock@gmail.com>"]
 mppm = "mppm.main:cli"
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.10"
 click = "*"
