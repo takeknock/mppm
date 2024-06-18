@@ -1,6 +1,7 @@
 import click
 from resolvelib import BaseReporter, Resolver
 
+from .locker import Locker
 from .provider import Provider
 from .pyproject import PyProjectToml
 
@@ -22,6 +23,8 @@ def lock():
     click.echo(python_version)
     click.echo("//---resolver result---")
     resolve_dependencies_result = resolver.resolve(dependencies)
+    Locker.lock(resolve_dependencies_result.mapping)
+    click.echo("//---[lock done!]---")
     for k, v in resolve_dependencies_result.mapping.items():
         click.echo(f"{k} = {v.version}")
 
