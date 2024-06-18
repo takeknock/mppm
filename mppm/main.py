@@ -1,6 +1,7 @@
 import click
 from resolvelib import BaseReporter, Resolver
 
+from .env import MppmEnv
 from .locker import Locker
 from .provider import Provider
 from .pyproject import PyProjectToml
@@ -30,7 +31,14 @@ def lock():
 
 @click.command()
 def install():
-    click.echo('install!')
+    dependencies = Locker.read()
+    python_version = toml.get_python_version()
+    MppmEnv.create(python_version)
+    for _, v in dependencies.items():
+        # assume only wheel file. Wheel can be installed by .whl URL.
+        MppmEnv.install(v['url'])
+
+    click.echo("//---[install done!]---")
 
 @click.command()
 @click.argument('args', nargs=-1)
