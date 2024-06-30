@@ -19,3 +19,6 @@ resolvelib = "==1.0.1"
 requests = "*"
 packaging = "*"
 virtualenv = "*"
+build = "*"
+twine = "*"
+
