@@ -16,3 +16,9 @@ class MppmEnv:
         cmd = ["pip", "install", package, "--no-deps"]
         subprocess.run(cmd, env=env, check=True)
 
+    @staticmethod
+    def run(args):
+        env = os.environ.copy()
+        env["PATH"] = os.pathsep.join([".mppmenv/bin", env["PATH"]])
+        subprocess.run(args, env=env, check=True)
+

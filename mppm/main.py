@@ -43,7 +43,7 @@ def install():
 @click.command()
 @click.argument('args', nargs=-1)
 def run(args):
-    click.echo(f'{list(args)}')
+    MppmEnv.run(args)
 
 cli.add_command(lock)
 cli.add_command(install)
