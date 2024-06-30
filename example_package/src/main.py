@@ -1,7 +1,7 @@
 import requests
 
 def get():
-    target = "https://www.google.com/"
+    target = "https://techbookfest.org"
     response = requests.get(target)
     print(response.text)
 
