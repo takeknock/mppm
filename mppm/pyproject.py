@@ -1,12 +1,18 @@
+import os
+
 from platform import python_version
 from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 from tomlkit.toml_file import TOMLFile
 
-class PyProjectToml:
+TOML_FILE_NAME = "pyproject.toml"
 
-    def __init__(self):
-        self.toml = TOMLFile("pyproject.toml").read()
+class PyProjectToml:
+    def __init__(self, path=None):
+        if path != None:
+            self.toml = TOMLFile(os.path.join(path, TOML_FILE_NAME)).read()
+        else:
+            self.toml = TOMLFile(TOML_FILE_NAME).read()
 
     def get_mppm_dependencies(self):
         dependencies = self.toml["project"]["dependencies"]
