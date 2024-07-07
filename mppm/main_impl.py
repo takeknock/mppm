@@ -1,5 +1,7 @@
 import click
 from resolvelib import BaseReporter, Resolver
+from typing import Dict, Optional, Any, List
+from packaging.requirements import Requirement
 
 
 from .env import MppmEnv
@@ -8,11 +10,11 @@ from .provider import Provider
 from .pyproject import PyProjectToml
 
 
-def install_impl(toml=None):
-    if toml == None:
+def install_impl(toml: Optional[PyProjectToml] = None) -> None:
+    if toml is None:
         toml = PyProjectToml()
-    dependencies = Locker.read()
-    python_version = toml.get_python_version()
+    dependencies: Dict[str, Any] = Locker.read()
+    python_version: str = toml.get_python_version()
     MppmEnv.create(python_version)
     for _, v in dependencies.items():
         # assume only wheel file. Wheel can be installed by .whl URL.
@@ -20,20 +22,23 @@ def install_impl(toml=None):
 
     click.echo("//---[install done!]---")
 
-def lock_impl(toml=None):
-    if toml == None:
+def lock_impl(toml: Optional[PyProjectToml] = None) -> None:
+    if toml is None:
         toml = PyProjectToml()
-    dependencies = toml.get_mppm_dependencies()
-    python_version = toml.get_python_version()
-    resolver = Resolver(Provider(python_version), BaseReporter())
+    dependencies: List[Requirement] = toml.get_mppm_dependencies()
+    python_version: str = toml.get_python_version()
+    resolver: Resolver = Resolver(Provider(python_version), BaseReporter())
 
     click.echo("//---dependencies---")
     click.echo(dependencies)
     click.echo("//---python version---")
     click.echo(python_version)
     click.echo("//---resolver result---")
-    resolve_dependencies_result = resolver.resolve(dependencies)
-    Locker.lock(resolve_dependencies_result.mapping)
-    click.echo("//---[lock done!]---")
-    for k, v in resolve_dependencies_result.mapping.items():
-        click.echo(f"{k} = {v.version}")
+    try:
+        resolve_dependencies_result = resolver.resolve(dependencies)
+        Locker.lock(resolve_dependencies_result.mapping)
+        click.echo("//---[lock done!]---")
+        for k, v in resolve_dependencies_result.mapping.items():
+            click.echo(f"{k} = {v.version}")
+    except:
+        click.echo(f"Failed to resolve dependencies")

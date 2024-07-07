@@ -1,6 +1,7 @@
 import click
 from build import ProjectBuilder
 from resolvelib import BaseReporter, Resolver
+from typing import Tuple, List, Callable
 
 import subprocess
 
@@ -11,33 +12,33 @@ from .pyproject import PyProjectToml
 from .main_impl import install_impl, lock_impl
 
 
-@click.group()
-def cli():
+@click.group()  # type: ignore
+def cli() -> None:
     pass
 
-@click.command()
-def lock():
+@click.command()  # type: ignore
+def lock() -> None:
     lock_impl()
 
-@click.command()
-def install():
+@click.command()  # type: ignore
+def install() -> None:
     install_impl()
 
-@click.command()
-@click.argument('args', nargs=-1)
-def run(args):
-    MppmEnv.run(args)
+@click.command()  # type: ignore
+@click.argument('args', nargs=-1)  # type: ignore
+def run(args: Tuple[str, ...]) -> None:
+    MppmEnv.run(list(args))
 
-@click.command()
-def build():
-    builder = ProjectBuilder(".", ".mppmenv/bin/python")
+@click.command()  # type: ignore
+def build() -> None:
+    builder: ProjectBuilder = ProjectBuilder(".", ".mppmenv/bin/python")
     for x in builder.build_system_requires:
         MppmEnv.install(x)
     builder.build("wheel", "dist")
 
-@click.command()
-def publish():
-    target_repository_hosted_site = "testpypi" # testpypi or pypi
+@click.command()  # type: ignore
+def publish() -> None:
+    target_repository_hosted_site: str = "testpypi"  # testpypi or pypi
     subprocess.run(
         ["twine", "upload", "--repository", target_repository_hosted_site, "dist/*"],
         check=True

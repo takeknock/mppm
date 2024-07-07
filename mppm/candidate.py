@@ -1,35 +1,39 @@
 from io import BytesIO
 from zipfile import ZipFile
+from typing import Dict, List, Tuple, Optional, Any
 
-import requests
+import requests  # type: ignore
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
-from packaging.metadata import parse_email
+from packaging.metadata import parse_email, RawMetadata
+from packaging.version import Version
 
 class Candidate:
-    def __init__(self, name, version, url, hashes, core_metadata):
-        self.name = canonicalize_name(name)
-        self.version = str(version)
-        self.url = url
-        self.hashes = hashes
-        self.core_metadata = core_metadata
-        self.metadata = None
-        self.dependencies = None
+    def __init__(self, name: str, version: Version, url: str, hashes: Dict[str, str], core_metadata: str):
+        self.name: str = canonicalize_name(name)
+        self.version: str = str(version)
+        self.url: str = url
+        self.hashes: Dict[str, str] = hashes
+        self.core_metadata: str = core_metadata
+        self.metadata: Optional[RawMetadata] = None
+        self.dependencies: Optional[List[Requirement]] = None
 
     @staticmethod
-    def _get_metadata(url):
+    def _get_metadata(url: str) -> Tuple[RawMetadata, Dict[str, List[str]]]:
         with ZipFile(BytesIO(requests.get(url).content)) as z:
             for n in z.namelist():
                 if n.endswith(".dist-info/METADATA"):
                     return parse_email(z.open(n).read())
-        return {}, {}
+        return RawMetadata(), {}
 
-    def get_dependencies(self):
+    def get_dependencies(self) -> List[Requirement]:
         if self.metadata is None:
             self.metadata, _ = self._get_metadata(self.url)
         if self.dependencies is None:
-            requires_dists = self.metadata.get("requires_dist", [])
-            deps = [Requirement(d) for d in requires_dists]
-
-            self.dependencies = [d for d in deps if d.marker is None]
+            requires_dist: Any = self.metadata.get("Requires-Dist")
+            if requires_dist is not None:
+                deps: List[Requirement] = [Requirement(d) for d in requires_dist]
+                self.dependencies = [d for d in deps if d.marker is None]
+            else:
+                self.dependencies = []
         return self.dependencies
