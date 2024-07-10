@@ -21,9 +21,9 @@ class MppmEnv:
     def run(args: List[str]) -> None:
         env: Dict[str, str] = os.environ.copy()
         env["PATH"] = os.pathsep.join([".mppmenv/bin", env["PATH"]])
+        print(f"args: {args}")
         subprocess.run(args, env=env, check=True)
 
     @staticmethod
     def install_python(python_version: str) -> None:
-        cmd: str = "git ls-remote --tags https://github.com/python/cpython.git | grep -v '\^{}' | cut -d/ -f3 | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -r"
-        subprocess.run(cmd, check=True, shell=True)
+        pass
