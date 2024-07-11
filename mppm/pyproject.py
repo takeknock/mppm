@@ -5,9 +5,11 @@ from typing import Dict, Any, Optional, List
 from platform import python_version
 from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
+from packaging.version import Version
 from tomlkit.toml_file import TOMLFile
 
 from .env import MppmEnv
+from .util import find_minimum_version
 
 TOML_FILE_NAME: str = "pyproject.toml"
 
@@ -27,13 +29,15 @@ class PyProjectToml:
         if projects and systems in SpecifierSet(projects):
             return systems
         try:
-            cmd = "git ls-remote --tags https://github.com/python/cpython.git | grep -v '\^{}' | cut -d/ -f3 | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'"
+            cmd = ["git", "ls-remote", "--tags", "https://github.com/python/cpython.git", "|", "grep", "-v", "'\^{}'", "|", "cut", "-d/", "-f3", "|", "grep", "-E", "'^v[0-9]+\.[0-9]+\.[0-9]+$'"]
             fetchable_python_versions = subprocess.run(cmd, check=True, shell=True, stdout=subprocess.PIPE)
             # バイトデータをUTF-8でデコードし、文字列に変換
             decoded_string = fetchable_python_versions.stdout.decode('utf-8')
 
             # 文字列を行ごとに分割してリストに変換
             version_list = decoded_string.strip().split('\n')
+            version_list = [v.lstrip('v') for v in version_list]
+
         except:
             def read_versions_to_list(file_path):
                 with open(file_path, 'r') as file:
@@ -45,8 +49,9 @@ class PyProjectToml:
 
             # 関数を呼び出してバージョンリストを取得
             version_list = read_versions_to_list(file_path)
-        if projects and version_list in SpecifierSet(projects):
-            minimum_required_version = ""
-            MppmEnv.install_python(minimum_required_version)
-
+            
+        if projects and any([v in SpecifierSet(projects) for v in version_list]):
+            minimum_required_version = find_minimum_version(projects, version_list)
+            return minimum_required_version
+        
         raise Exception('Not found requires python version.')
