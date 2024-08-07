@@ -7,6 +7,9 @@ name = "mppm"
 version = "0.1.0"
 description = "My Package Manager"
 authors = ["T.M. <takeknock@gmail.com>"]
+include = [
+    "mppm/python_versions.txt"
+]
 
 [tool.poetry.scripts]
 mppm = "mppm.main:cli"

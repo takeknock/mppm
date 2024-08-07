@@ -1,8 +1,8 @@
-import click
-from resolvelib import BaseReporter, Resolver
-from typing import Dict, Optional, Any, List
-from packaging.requirements import Requirement
+from typing import Any, Dict, List, Optional
 
+import click
+from packaging.requirements import Requirement
+from resolvelib import BaseReporter, Resolver
 
 from .env import MppmEnv
 from .locker import Locker

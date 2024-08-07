@@ -1,15 +1,32 @@
 import os
 import subprocess
-from typing import Dict, Any, Optional, List
-
 from platform import python_version
+from typing import Any, Dict, List, Optional
+
 from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+from pkg_resources import resource_string
 from tomlkit.toml_file import TOMLFile
 
 from .env import MppmEnv
 from .util import find_minimum_version
+
+
+def read_pyproject_text_file():
+    try:
+        content = resource_string(__name__, 'python_versions.txt')
+        text = content.decode('utf-8')
+        return text.splitlines()
+    except:
+        try:
+            file_path = "python_versions.txt"
+            with open(file_path, 'r') as file:
+                versions = file.read().splitlines()
+                return versions
+        except:
+            raise FileNotFoundError("python_versions.txt is not found.")
+
 
 TOML_FILE_NAME: str = "pyproject.toml"
 
@@ -39,16 +56,7 @@ class PyProjectToml:
             version_list = [v.lstrip('v') for v in version_list]
 
         except:
-            def read_versions_to_list(file_path):
-                with open(file_path, 'r') as file:
-                    versions = file.read().splitlines()
-                    return versions
-
-            # ファイルパスを指定
-            file_path = 'python_versions.txt'
-
-            # 関数を呼び出してバージョンリストを取得
-            version_list = read_versions_to_list(file_path)
+            version_list = read_pyproject_text_file()
             
         if projects and any([v in SpecifierSet(projects) for v in version_list]):
             minimum_required_version = find_minimum_version(projects, version_list)

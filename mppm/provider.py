@@ -1,16 +1,17 @@
 from operator import attrgetter
-from typing import Dict, List, Any, Iterator, Mapping, Sequence, Set
+from typing import Any, Dict, Iterator, List, Mapping, Sequence, Set
 
 import requests
-from packaging.version import Version
 from packaging.requirements import Requirement
 from packaging.specifiers import SpecifierSet
-from packaging.tags import sys_tags, Tag
+from packaging.tags import Tag, sys_tags
 from packaging.utils import canonicalize_name, parse_wheel_filename
+from packaging.version import Version
 from resolvelib import AbstractProvider
 from resolvelib.resolvers import RequirementInformation
 
 from .candidate import Candidate
+
 
 class Provider(AbstractProvider):
     def __init__(self, python_version: str):

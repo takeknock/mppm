@@ -1,15 +1,15 @@
+import subprocess
+from typing import Callable, List, Tuple
+
 import click
 from build import ProjectBuilder
 from resolvelib import BaseReporter, Resolver
-from typing import Tuple, List, Callable
-
-import subprocess
 
 from .env import MppmEnv
 from .locker import Locker
+from .main_impl import install_impl, lock_impl
 from .provider import Provider
 from .pyproject import PyProjectToml
-from .main_impl import install_impl, lock_impl
 
 
 @click.group()  # type: ignore

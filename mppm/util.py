@@ -1,6 +1,8 @@
 from typing import List
+
 from packaging.specifiers import SpecifierSet
 from packaging.version import Version
+
 
 def find_minimum_version(specifier_set: str, available_versions: List[str]) -> Version:
     spec = SpecifierSet(specifier_set)

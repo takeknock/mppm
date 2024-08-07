@@ -1,12 +1,13 @@
 from io import BytesIO
+from typing import Any, Dict, List, Optional, Tuple
 from zipfile import ZipFile
-from typing import Dict, List, Tuple, Optional, Any
 
 import requests  # type: ignore
+from packaging.metadata import RawMetadata, parse_email
 from packaging.requirements import Requirement
 from packaging.utils import canonicalize_name
-from packaging.metadata import parse_email, RawMetadata
 from packaging.version import Version
+
 
 class Candidate:
     def __init__(self, name: str, version: Version, url: str, hashes: Dict[str, str], core_metadata: str):
